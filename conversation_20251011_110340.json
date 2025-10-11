@@ -1,0 +1,44 @@
+[
+  {
+    "input": "Hi Maitri",
+    "response": "Welcome! I'm MAITRI, ready to assist you.",
+    "type": "text",
+    "timestamp": "2025-10-11T11:02:16.609607"
+  },
+  {
+    "input": "thank you",
+    "response": "I'm listening. Please continue.",
+    "type": "text",
+    "timestamp": "2025-10-11T11:02:42.700693"
+  },
+  {
+    "input": "england versus new thank you",
+    "response": "I'm here to support you through this.",
+    "type": "voice",
+    "timestamp": "2025-10-11T11:02:42.809544"
+  },
+  {
+    "input": "hi",
+    "response": "Hello! I'm MAITRI, your AI assistant. How can I help you today?",
+    "type": "text",
+    "timestamp": "2025-10-11T11:03:18.207210"
+  },
+  {
+    "input": "speak to me",
+    "response": "Your wellbeing is important to me.",
+    "type": "text",
+    "timestamp": "2025-10-11T11:03:24.442863"
+  },
+  {
+    "input": "ok",
+    "response": "Your wellbeing is important to me.",
+    "type": "text",
+    "timestamp": "2025-10-11T11:03:31.335040"
+  },
+  {
+    "input": "voice",
+    "response": "I'm here to support you through this.",
+    "type": "text",
+    "timestamp": "2025-10-11T11:03:37.808996"
+  }
+]

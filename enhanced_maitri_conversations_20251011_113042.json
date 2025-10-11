@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": "2025-10-11T11:29:52.756832",
+    "input_type": "voice",
+    "user_input": "hey maitri give me the responses",
+    "assistant_response": "Hi there! I'm here to help with psychological and physical wellbeing. What's on your mind?",
+    "emotion_state": {
+      "neutral": 0.26308005479957663,
+      "happy": 0.26109937734690586,
+      "sad": 0.10665801606737008,
+      "angry": 0.11494430238673362,
+      "surprise": 0.12051502812381211,
+      "fear": 0.06973170955980566,
+      "disgust": 0.06397151171579604
+    },
+    "is_crisis": false,
+    "response_delivery": "voice"
+  }
+]

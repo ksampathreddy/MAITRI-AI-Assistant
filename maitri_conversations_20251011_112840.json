@@ -1,0 +1,77 @@
+[
+  {
+    "timestamp": "2025-10-11T11:14:49.483519",
+    "input_type": "voice",
+    "user_input": "how are you doing",
+    "assistant_response": "I'm here to listen and support you through this.",
+    "emotion_state": {
+      "neutral": 0.39999999999999997,
+      "happy": 0.13333333333333333,
+      "sad": 0.06666666666666667,
+      "angry": 0.06666666666666667,
+      "surprise": 0.19999999999999998,
+      "fear": 0.13333333333333333
+    },
+    "is_crisis": false
+  },
+  {
+    "timestamp": "2025-10-11T11:18:00.794270",
+    "input_type": "text",
+    "user_input": "how are you",
+    "assistant_response": "I'm here to listen and support you through this.",
+    "emotion_state": {
+      "neutral": 0.39999999999999997,
+      "happy": 0.13333333333333333,
+      "sad": 0.06666666666666667,
+      "angry": 0.06666666666666667,
+      "surprise": 0.19999999999999998,
+      "fear": 0.13333333333333333
+    },
+    "is_crisis": false
+  },
+  {
+    "timestamp": "2025-10-11T11:18:00.902657",
+    "input_type": "voice",
+    "user_input": "i",
+    "assistant_response": "I'm here to listen and support you through this.",
+    "emotion_state": {
+      "neutral": 0.39999999999999997,
+      "happy": 0.13333333333333333,
+      "sad": 0.06666666666666667,
+      "angry": 0.06666666666666667,
+      "surprise": 0.19999999999999998,
+      "fear": 0.13333333333333333
+    },
+    "is_crisis": false
+  },
+  {
+    "timestamp": "2025-10-11T11:18:14.098568",
+    "input_type": "text",
+    "user_input": "hi",
+    "assistant_response": "Hi there! I'm here to help with psychological and physical wellbeing. What's on your mind?",
+    "emotion_state": {
+      "neutral": 0.37499999999999994,
+      "happy": 0.125,
+      "sad": 0.0625,
+      "angry": 0.125,
+      "surprise": 0.18749999999999997,
+      "fear": 0.125
+    },
+    "is_crisis": false
+  },
+  {
+    "timestamp": "2025-10-11T11:18:14.204006",
+    "input_type": "voice",
+    "user_input": "hello",
+    "assistant_response": "Hello! I'm MAITRI, your AI assistant. How can I support you today?",
+    "emotion_state": {
+      "neutral": 0.37499999999999994,
+      "happy": 0.125,
+      "sad": 0.0625,
+      "angry": 0.125,
+      "surprise": 0.18749999999999997,
+      "fear": 0.125
+    },
+    "is_crisis": false
+  }
+]
