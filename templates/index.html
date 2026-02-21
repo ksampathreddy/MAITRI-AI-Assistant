@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MAITRI Multimodal Emotion Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>MAITRI - Real-Time Emotional Monitoring</h1>
+
+<div class="container">
+
+    <div class="box">
+    <h2>Face Emotion</h2>
+    <img src="{{ url_for('video') }}" width="400">
+    <h3 id="faceEmotion">Detecting...</h3>
+</div>
+
+    <div class="box">
+        <h2>Audio Emotion</h2>
+        <h3 id="audioEmotion">Detecting...</h3>
+    </div>
+
+    <div class="box">
+        <h2>Text Emotion (Optional)</h2>
+        <textarea id="textInput" rows="4" cols="30"
+            placeholder="Type something..."></textarea><br><br>
+        <button onclick="detectText()">Analyze Text</button>
+        <h3 id="textEmotion">None</h3>
+    </div>
+
+    <div class="box overall">
+        <h2>OVERALL EMOTION</h2>
+        <h1 id="overallEmotion">Detecting...</h1>
+    </div>
+
+</div>
+
+<script>
+
+// Real-time polling every 1 second
+setInterval(function(){
+    fetch('/emotions')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("faceEmotion").innerHTML = data.face;
+        document.getElementById("audioEmotion").innerHTML = data.audio;
+        document.getElementById("textEmotion").innerHTML = data.text || "None";
+        document.getElementById("overallEmotion").innerHTML = data.overall;
+    });
+}, 1000);
+
+function detectText(){
+
+    const text = document.getElementById("textInput").value;
+
+    fetch('/text_emotion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({text: text})
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("textEmotion").innerHTML =
+        data.text_emotion || "None";
+    });
+}
+
+</script>
+
+</body>
+</html>

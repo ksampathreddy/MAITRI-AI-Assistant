@@ -1,0 +1,7 @@
+torch torchvision pandas numpy opencv-python
+flask
+librosa numpy pandas scikit-learn matplotlib tensorflow
+torch transformers datasets scikit-learn pandas numpy
+flask torch torchvision torchaudio transformers deepface speechbrain librosa soundfile
+
+pip install torch torchvision opencv-python numpy
