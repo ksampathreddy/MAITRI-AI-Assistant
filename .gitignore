@@ -17,3 +17,8 @@ data/
 # Ignore large files
 *.zip
 *.csv
+
+maitri_llm/
+*.pt
+*.pth
+*.safetensors
