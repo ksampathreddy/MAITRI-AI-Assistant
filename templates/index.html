@@ -1,9 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MAITRI Multimodal Emotion Monitoring</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>MAITRI Multimodal Emotional Monitor</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0b1c2d;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .box {
+            background: #142b44;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+        }
+
+        .overall {
+            background: #1d3b5f;
+        }
+
+        .response {
+            background: #243f63;
+            width: 650px;
+        }
+
+        textarea {
+            width: 90%;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
+
 <body>
 
 <h1>MAITRI - Real-Time Emotional Monitoring</h1>
@@ -11,10 +59,10 @@
 <div class="container">
 
     <div class="box">
-    <h2>Face Emotion</h2>
-    <img src="{{ url_for('video') }}" width="400">
-    <h3 id="faceEmotion">Detecting...</h3>
-</div>
+        <h2>Face Emotion</h2>
+        <img src="{{ url_for('video') }}" width="280">
+        <h3 id="faceEmotion">Detecting...</h3>
+    </div>
 
     <div class="box">
         <h2>Audio Emotion</h2>
@@ -22,10 +70,10 @@
     </div>
 
     <div class="box">
-        <h2>Text Emotion (Optional)</h2>
-        <textarea id="textInput" rows="4" cols="30"
-            placeholder="Type something..."></textarea><br><br>
-        <button onclick="detectText()">Analyze Text</button>
+        <h2>Text Emotion</h2>
+        <textarea id="textInput" rows="4"
+            placeholder="Type how you're feeling..."></textarea><br><br>
+        <button onclick="detectText()">Analyze</button>
         <h3 id="textEmotion">None</h3>
     </div>
 
@@ -34,11 +82,15 @@
         <h1 id="overallEmotion">Detecting...</h1>
     </div>
 
+    <div class="box response">
+        <h2>AI Support Response</h2>
+        <p id="aiResponse">Waiting for emotional analysis...</p>
+    </div>
+
 </div>
 
 <script>
 
-// Real-time polling every 1 second
 setInterval(function(){
     fetch('/emotions')
     .then(response => response.json())
@@ -47,8 +99,9 @@ setInterval(function(){
         document.getElementById("audioEmotion").innerHTML = data.audio;
         document.getElementById("textEmotion").innerHTML = data.text || "None";
         document.getElementById("overallEmotion").innerHTML = data.overall;
+        document.getElementById("aiResponse").innerHTML = data.response;
     });
-}, 1000);
+}, 3000);
 
 function detectText(){
 

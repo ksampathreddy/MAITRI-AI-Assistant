@@ -7,16 +7,21 @@ import numpy as np
 from emotion.face_emotion import FaceEmotionDetector
 from audio_emotion.predict_audio import predict_audio
 from text_emotion.predict_text import predict_text_emotion
+from llm.response_generator import ResponseGenerator
 
 app = Flask(__name__)
 
+# ---------------- INIT MODELS ----------------
 face_detector = FaceEmotionDetector()
+response_generator = ResponseGenerator()
+
 camera = cv2.VideoCapture(0)
 
 latest_face_emotion = "Detecting..."
 latest_audio_emotion = "Detecting..."
 latest_text_emotion = None
 latest_overall_emotion = "Detecting..."
+latest_ai_response = "Waiting for emotional analysis..."
 
 # ---------------- EMOTION SCORE MAP ----------------
 emotion_score = {
@@ -44,8 +49,8 @@ def generate_frames():
         emotion = face_detector.predict(frame)
         latest_face_emotion = emotion
 
-        cv2.putText(frame, emotion, (20,40),
-                    cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+        cv2.putText(frame, emotion, (20, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
 
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
@@ -61,11 +66,10 @@ def audio_loop():
             latest_audio_emotion = predict_audio()
         except:
             latest_audio_emotion = "Audio Error"
-        time.sleep(1)
+        time.sleep(3)
 
-# ---------------- OVERALL AVERAGE LOGIC ----------------
+# ---------------- OVERALL LOGIC ----------------
 def compute_overall():
-
     scores = []
 
     if latest_face_emotion in emotion_score:
@@ -82,7 +86,6 @@ def compute_overall():
 
     avg_score = np.mean(scores)
 
-    # Convert back to emotion
     closest = min(emotion_score.items(),
                   key=lambda x: abs(x[1] - avg_score))[0]
 
@@ -100,14 +103,26 @@ def video():
 
 @app.route('/emotions')
 def emotions():
-    global latest_overall_emotion
+    global latest_overall_emotion, latest_ai_response
+
     latest_overall_emotion = compute_overall()
+
+    if latest_overall_emotion != "No Data":
+        try:
+            user_input = latest_text_emotion if latest_text_emotion else "No specific message provided."
+            latest_ai_response = response_generator.generate(
+                latest_overall_emotion,
+                user_input
+            )
+        except:
+            latest_ai_response = "I'm here with you. Let's take a calm breath together."
 
     return jsonify({
         "face": latest_face_emotion,
         "audio": latest_audio_emotion,
         "text": latest_text_emotion,
-        "overall": latest_overall_emotion
+        "overall": latest_overall_emotion,
+        "response": latest_ai_response
     })
 
 @app.route('/text_emotion', methods=['POST'])
