@@ -20,5 +20,5 @@ data/
 
 maitri_llm/
 *.pt
-*.pth
+*.bin
 *.safetensors
