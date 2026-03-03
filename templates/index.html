@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MAITRI Multimodal Emotional Monitor</title>
+    <title>MAITRI</title>
     <style>
         body {
             font-family: Arial;
@@ -54,7 +54,7 @@
 
 <body>
 
-<h1>MAITRI - Real-Time Emotional Monitoring</h1>
+<h1>MAITRI: A Multimodal AI Assistant for Physcological and Physical WellBeing of Astronauts</h1>
 
 <div class="container">
 
@@ -101,11 +101,21 @@ setInterval(function(){
         document.getElementById("overallEmotion").innerHTML = data.overall;
         document.getElementById("aiResponse").innerHTML = data.response;
     });
-}, 3000);
+}, 2000);
+
+let isGenerating = false;
 
 function detectText(){
 
+    if (isGenerating) return;
+
     const text = document.getElementById("textInput").value;
+
+    if (text.trim() === "") return;
+
+    isGenerating = true;
+
+    document.getElementById("aiResponse").innerHTML = "Generating support response...";
 
     fetch('/text_emotion', {
         method: 'POST',
@@ -114,10 +124,47 @@ function detectText(){
     })
     .then(response => response.json())
     .then(data => {
+
         document.getElementById("textEmotion").innerHTML =
-        data.text_emotion || "None";
+            data.text_emotion || "None";
+
+        return fetch('/generate_response', { method: 'POST' });
+
+    })
+    .then(res => res.json())
+    .then(result => {
+
+        document.getElementById("aiResponse").innerHTML =
+            result.response;
+
+        isGenerating = false;
+
+    })
+    .catch(error => {
+        console.error(error);
+        document.getElementById("aiResponse").innerHTML =
+            "AI system error.";
+        isGenerating = false;
     });
 }
+
+
+// Poll only emotional data (NOT LLM)
+setInterval(function(){
+
+    if (isGenerating) return;
+
+    fetch('/emotions')
+    .then(response => response.json())
+    .then(data => {
+
+        document.getElementById("faceEmotion").innerHTML = data.face;
+        document.getElementById("audioEmotion").innerHTML = data.audio;
+        document.getElementById("overallEmotion").innerHTML = data.overall;
+
+    });
+
+}, 2000);
 
 </script>
 
