@@ -1,4 +1,9 @@
 # Ignore virtual environment
+*.pkl
+*.csv
+*.h5
+*.pt
+*.wav
 venv/
 
 # Ignore model files

@@ -140,7 +140,7 @@ def emotions():
 def text_emotion():
     global latest_text_emotion, latest_user_text
 
-    data = request.json
+    data = request.get_json(force=True)
     text = data.get("text", "")
 
     latest_user_text = text
@@ -161,17 +161,24 @@ import time
 @app.route('/generate_response', methods=['POST'])
 def generate_response():
 
-    global latest_ai_response
+    global latest_ai_response, latest_user_text
 
     print("Calling LLM...")
     start = time.time()
 
     try:
+        # ✅ Get user text properly
+        data = request.get_json(force=True)
+        user_text = data.get("text", latest_user_text)
+
+        print("INPUT TO LLM:", user_text)
+
+        # ✅ Correct LLM call
         latest_ai_response = response_generator.generate(
             latest_face_emotion,
             latest_audio_emotion,
             latest_text_emotion,
-            latest_user_text
+            user_text   # ✅ FIXED
         )
 
         print("LLM RESPONSE:", latest_ai_response)
