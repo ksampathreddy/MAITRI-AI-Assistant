@@ -2,10 +2,10 @@
 venv/
 
 # Ignore model files
-models/
-*.pth
-*.h5
-*.ckpt
+# models/
+# *.pth
+# *.h5
+# *.ckpt
 
 # Ignore cache
 __pycache__/

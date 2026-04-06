@@ -38,12 +38,20 @@ class ResponseGenerator:
     Do NOT simulate a conversation.
     Respond in exactly 2-3 sentences only.
     Be calm, professional, and mission-aware.
-    <|user|>
+    You are MAITRI, an AI assistant for astronaut support.
+
+    STRICT RULES:
+    - Answer ONLY the astronaut's message
+    - DO NOT ask questions
+    - DO NOT simulate conversation
+    - Keep response to 2 sentences MAX
+    - Be calm, supportive, mission-focused
+    # <|user|>
     Current emotional state:
     - Facial emotion: {face_emotion}
     - Voice emotion: {audio_emotion}
     - Text emotion: {text_emotion}
-    - Stress level: {stress_level}
+    # - Stress level: {stress_level}
 
     Astronaut message:
     {user_text}
@@ -56,7 +64,7 @@ class ResponseGenerator:
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=15,      # Reduced further
+                max_new_tokens=80,      # Reduced further
                 do_sample=False,
                 repetition_penalty=1.2, # Prevent repetition
                 eos_token_id=self.tokenizer.eos_token_id

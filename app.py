@@ -171,7 +171,9 @@ def generate_response():
             latest_face_emotion,
             latest_audio_emotion,
             latest_text_emotion,
-            latest_user_text
+            if (!isGenerating) {
+    document.getElementById("aiResponse").innerHTML = data.response;
+}
         )
 
         print("LLM RESPONSE:", latest_ai_response)
