@@ -1,175 +1,169 @@
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <link rel="icon" href="../static/image.png" type="image/x-icon">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MAITRI AI Assistant</title>
-        <style>
-            body {
-                font-family: Arial;
-                background: #0b1c2d;
-                color: white;
-                text-align: center;
-            }
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="../static/image.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAITRI AI Assistant</title>
 
-            .container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 5px 10px;
-            }
+    <style>
+        body {
+            font-family: Arial;
+            background: #0b1c2d;
+            color: white;
+            text-align: center;
+        }
 
-            .box {
-                background: #142b44;
-                padding: 12px;
-                border-radius: 10px;
-                width: 340px;
-            }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
 
-            .overall {
-                background: #1d3b5f;
-            }
+        .box {
+            background: #142b44;
+            padding: 12px;
+            border-radius: 10px;
+            width: 340px;
+        }
 
-            .response {
-                background: #243f63;
-                width: 650px;
-            }
+        .overall {
+            background: #1d3b5f;
+        }
 
-            textarea {
-                width: 90%;
-            }
+        .response {
+            background: #243f63;
+            width: 650px;
+        }
 
-            button {
-                padding: 8px 15px;
-                border: none;
-                border-radius: 5px;
-                background: #4CAF50;
-                color: white;
-                cursor: pointer;
-            }
+        textarea {
+            width: 90%;
+        }
 
-            h1 {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
 
-    <body>
+        h1 {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
 
-    <h1>MAITRI: A Multimodal AI Assistant for Physcological and Physical WellBeing of Astronauts</h1>
+<body>
 
-    <div class="container">
+<h1>MAITRI: AI Assistant for Astronaut WellBeing</h1>
 
-        <div class="box">
-            <h2>Face Emotion</h2>
-            <img src="{{ url_for('video') }}" width="280">
-            <h3 id="faceEmotion">Detecting...</h3>
-        </div>
+<div class="container">
 
-        <div class="box">
-            <h2>Audio Emotion</h2>
-            <h3 id="audioEmotion">Detecting...</h3>
-        </div>
-
-        <div class="box">
-            <h2>Text Emotion</h2>
-            <textarea id="textInput" rows="4"
-                placeholder="Type how you're feeling..."></textarea><br><br>
-            <button onclick="detectText()">Analyze</button>
-            <h3 id="textEmotion">None</h3>
-        </div>
-
-        <div class="box overall">
-            <h2>OVERALL EMOTION</h2>
-            <h1 id="overallEmotion">Detecting...</h1>
-        </div>
-
-        <div class="box response">
-            <h2>AI Support Response</h2>
-            <p id="aiResponse">Waiting for emotional analysis...</p>
-        </div>
-
+    <div class="box">
+        <h2>Face Emotion</h2>
+        <img src="{{ url_for('video') }}" width="280">
+        <h3 id="faceEmotion">Detecting...</h3>
     </div>
 
-    <script>
+    <div class="box">
+        <h2>Audio Emotion</h2>
+        <h3 id="audioEmotion">Detecting...</h3>
+    </div>
 
-    setInterval(function(){
-        fetch('/emotions')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("faceEmotion").innerHTML = data.face;
-            document.getElementById("audioEmotion").innerHTML = data.audio;
-            document.getElementById("textEmotion").innerHTML = data.text || "None";
-            document.getElementById("overallEmotion").innerHTML = data.overall;
-            document.getElementById("aiResponse").innerHTML = data.response;
-        });
-    }, 2000);
+    <div class="box">
+        <h2>Text Emotion</h2>
+        <textarea id="textInput" rows="4"
+            placeholder="Type how you're feeling..."></textarea><br><br>
+        <button onclick="detectText()">Analyze</button>
+        <h3 id="textEmotion">None</h3>
+    </div>
 
-    let isGenerating = false;
+    <div class="box overall">
+        <h2>OVERALL EMOTION</h2>
+        <h1 id="overallEmotion">Detecting...</h1>
+    </div>
 
-    function detectText(){
+    <div class="box response">
+        <h2>AI Support Response</h2>
+        <p id="aiResponse">Waiting for emotional analysis...</p>
+    </div>
 
-        if (isGenerating) return;
+</div>
 
-        const text = document.getElementById("textInput").value;
+<script>
 
-        if (text.trim() === "") return;
+let isGenerating = false;
 
-        isGenerating = true;
+// 🔁 LIVE EMOTION UPDATE (NO LLM CALL)
+setInterval(function(){
 
-        document.getElementById("aiResponse").innerHTML = "Generating support response...";
+    if (isGenerating) return;
 
-        fetch('/text_emotion', {
+    fetch('/emotions')
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("faceEmotion").innerHTML = data.face;
+        document.getElementById("audioEmotion").innerHTML = data.audio;
+        document.getElementById("overallEmotion").innerHTML = data.overall;
+    });
+
+}, 2000);
+
+
+// 🔥 MAIN FUNCTION (FIXED)
+function detectText(){
+
+    if (isGenerating) return;
+
+    const text = document.getElementById("textInput").value;
+
+    if (text.trim() === "") return;
+
+    isGenerating = true;
+
+    document.getElementById("aiResponse").innerHTML = "Generating support response...";
+
+    // STEP 1: TEXT EMOTION
+    fetch('/text_emotion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        document.getElementById("textEmotion").innerHTML =
+            data.text_emotion || "None";
+
+        // STEP 2: GENERATE RESPONSE (FIXED)
+        return fetch('/generate_response', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({text: text})
-        })
-        .then(response => response.json())
-        .then(data => {
-
-            document.getElementById("textEmotion").innerHTML =
-                data.text_emotion || "None";
-
-            return fetch('/generate_response', { method: 'POST' });
-
-        })
-        .then(res => res.json())
-        .then(result => {
-
-            document.getElementById("aiResponse").innerHTML =
-                result.response;
-
-            isGenerating = false;
-
-        })
-        .catch(error => {
-            console.error(error);
-            document.getElementById("aiResponse").innerHTML =
-                "AI system error.";
-            isGenerating = false;
-        });
-    }
-
-
-    // Poll only emotional data (NOT LLM)
-    setInterval(function(){
-
-        if (isGenerating) return;
-
-        fetch('/emotions')
-        .then(response => response.json())
-        .then(data => {
-
-            document.getElementById("faceEmotion").innerHTML = data.face;
-            document.getElementById("audioEmotion").innerHTML = data.audio;
-            document.getElementById("overallEmotion").innerHTML = data.overall;
-
+            headers: { 'Content-Type': 'application/json' },   // ✅ IMPORTANT
+            body: JSON.stringify({ text: text })               // ✅ IMPORTANT
         });
 
-    }, 2000);
+    })
+    .then(res => res.json())
+    .then(result => {
 
-    </script>
+        document.getElementById("aiResponse").innerHTML =
+            result.response;
 
-    </body>
-    </html>
+        isGenerating = false;
+
+    })
+    .catch(error => {
+        console.error(error);
+        document.getElementById("aiResponse").innerHTML =
+            "AI system error.";
+        isGenerating = false;
+    });
+}
+
+</script>
+
+</body>
+</html>
