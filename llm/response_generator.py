@@ -64,7 +64,7 @@ class ResponseGenerator:
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=80,      # Reduced further
+                max_new_tokens=90,      # Reduced further
                 do_sample=False,
                 repetition_penalty=1.2, # Prevent repetition
                 eos_token_id=self.tokenizer.eos_token_id

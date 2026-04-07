@@ -21,7 +21,7 @@ response_generator = ResponseGenerator()
 camera = cv2.VideoCapture(0)
 
 latest_face_emotion = "Detecting..."
-latest_audio_emotion = "Detecting..."
+latest_audio_emotion = "No audio detected"
 latest_text_emotion = None
 latest_user_text = ""
 latest_ai_response = "Waiting for emotional analysis..."
@@ -74,9 +74,17 @@ def audio_loop():
 
     while True:
         try:
-            latest_audio_emotion = predict_audio()
-        except:
-            latest_audio_emotion = "Audio Error"
+            result = predict_audio()
+
+            # ✅ Handle empty / silence case
+            if result is None or result == "":
+                latest_audio_emotion = "No audio detected"
+            else:
+                latest_audio_emotion = result
+
+        except Exception as e:
+            print("Audio Error:", e)
+            latest_audio_emotion = "No audio detected"
 
         time.sleep(2)
 

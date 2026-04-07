@@ -100,13 +100,12 @@ let isGenerating = false;
 // 🔁 LIVE EMOTION UPDATE (NO LLM CALL)
 setInterval(function(){
 
-    if (isGenerating) return;
-
     fetch('/emotions')
     .then(res => res.json())
     .then(data => {
         document.getElementById("faceEmotion").innerHTML = data.face;
-        document.getElementById("audioEmotion").innerHTML = data.audio;
+        document.getElementById("audioEmotion").innerHTML =
+    data.audio || "No audio detected";
         document.getElementById("overallEmotion").innerHTML = data.overall;
     });
 
