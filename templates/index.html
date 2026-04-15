@@ -58,11 +58,7 @@
 
 <body>
 
-<<<<<<< HEAD
 <h1>MAITRI: AI Assistant</h1>
-=======
-<h1>MAITRI: AI Assistant for Astronaut WellBeing</h1>
->>>>>>> 4ea826b18af4bdd97c90f261a667ddc9b09cb964
 
 <div class="container">
 
@@ -101,23 +97,12 @@
 let isGenerating = false;
 
 
-<<<<<<< HEAD
 setInterval(function(){
 
-=======
-let isGenerating = false;
-
-// 🔁 LIVE EMOTION UPDATE (NO LLM CALL)
-setInterval(function(){
-
-    if (isGenerating) return;
-
->>>>>>> 4ea826b18af4bdd97c90f261a667ddc9b09cb964
     fetch('/emotions')
     .then(res => res.json())
     .then(data => {
         document.getElementById("faceEmotion").innerHTML = data.face;
-<<<<<<< HEAD
         document.getElementById("audioEmotion").innerHTML =
     data.audio || "No audio detected";
         document.getElementById("overallEmotion").innerHTML = data.overall;
@@ -125,16 +110,7 @@ setInterval(function(){
 
 }, 2000);
 
-=======
-        document.getElementById("audioEmotion").innerHTML = data.audio;
-        document.getElementById("overallEmotion").innerHTML = data.overall;
-    });
->>>>>>> 4ea826b18af4bdd97c90f261a667ddc9b09cb964
 
-}, 2000);
-
-
-// 🔥 MAIN FUNCTION (FIXED)
 function detectText(){
 
     if (isGenerating) return;
@@ -162,13 +138,8 @@ function detectText(){
         // STEP 2: GENERATE RESPONSE (FIXED)
         return fetch('/generate_response', {
             method: 'POST',
-<<<<<<< HEAD
             headers: { 'Content-Type': 'application/json' },   
             body: JSON.stringify({ text: text })               
-=======
-            headers: { 'Content-Type': 'application/json' },   // ✅ IMPORTANT
-            body: JSON.stringify({ text: text })               // ✅ IMPORTANT
->>>>>>> 4ea826b18af4bdd97c90f261a667ddc9b09cb964
         });
 
     })
