@@ -8,19 +8,22 @@ class ResponseGenerator:
     def __init__(self):
         print("Loading TinyLlama Chat (Optimized)...")
 
+
         model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
+
             torch_dtype=torch.float32
+
         )
 
         self.model.to(DEVICE)
         self.model.eval()
 
-   
+
     def generate(self, face_emotion, audio_emotion, text_emotion, user_text):
 
         stress_level = self._compute_stress(
@@ -57,17 +60,20 @@ User:
 Answer:
 """
 
+
         inputs = self.tokenizer(prompt, return_tensors="pt")
         inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
+
                 max_new_tokens=60,
                 do_sample=True,
                 temperature=0.6,
                 top_p=0.8,
                 repetition_penalty=1.3,
+
                 eos_token_id=self.tokenizer.eos_token_id
             )
 
@@ -75,6 +81,7 @@ Answer:
             outputs[0],
             skip_special_tokens=True
         )
+
 
         if "Answer:" in response:
             response = response.split("Answer:")[-1]
@@ -105,6 +112,7 @@ Answer:
 
         return response
     
+
     def _compute_stress(self, face, audio, text):
 
         negative = ["sad", "fear", "angry", "disgust"]
