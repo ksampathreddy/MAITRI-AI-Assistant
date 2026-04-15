@@ -21,36 +21,39 @@ class RAVDESSDataset(Dataset):
         self.labels = []
 
         for actor in os.listdir(root_dir):
-            actor_path = os.path.join(root_dir, actor)
-
-            if not os.path.isdir(actor_path):
+            path = os.path.join(root_dir, actor)
+            if not os.path.isdir(path):
                 continue
 
-            for file in os.listdir(actor_path):
-
+            for file in os.listdir(path):
                 if not file.endswith(".wav"):
                     continue
 
                 parts = file.split("-")
-
                 if len(parts) < 3:
                     continue
 
                 emotion = parts[2]
-
                 if emotion not in emotion_map:
                     continue
 
-                self.files.append(os.path.join(actor_path, file))
+                self.files.append(os.path.join(path, file))
                 self.labels.append(emotion_map[emotion])
 
     def __len__(self):
         return len(self.files)
 
     def __getitem__(self, idx):
-        mfcc = extract_features(self.files[idx])
+
+        while True:
+            mfcc = extract_features(self.files[idx])
+            if mfcc is not None:
+                break
+            idx = (idx + 1) % len(self.files)
+
         mfcc = torch.tensor(mfcc).unsqueeze(0).float()
         label = torch.tensor(self.labels[idx])
+
         return mfcc, label
 
 
@@ -58,10 +61,11 @@ dataset = RAVDESSDataset("data/ravdess")
 loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
 model = AudioEmotionModel().to(DEVICE)
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-epochs = 60
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.0005)
+
+epochs = 30
 
 for epoch in range(epochs):
     total_loss = 0
@@ -82,4 +86,4 @@ for epoch in range(epochs):
 os.makedirs("audio_emotion/models", exist_ok=True)
 torch.save(model.state_dict(), "audio_emotion/models/ravdess_model.pth")
 
-print("Model saved successfully!")
+print("Model saved!")

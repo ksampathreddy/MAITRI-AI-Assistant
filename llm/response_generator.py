@@ -6,7 +6,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 class ResponseGenerator:
     def __init__(self):
-        print("Loading TinyLlama Chat (CPU Optimized)...")
+        print("Loading TinyLlama Chat (Optimized)...")
 
         model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
@@ -14,15 +14,13 @@ class ResponseGenerator:
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float32  # Full CPU compatibility
+            torch_dtype=torch.float32
         )
 
         self.model.to(DEVICE)
         self.model.eval()
 
-    # =====================================
-    # MAIN GENERATE FUNCTION (Optimized)
-    # =====================================
+   
     def generate(self, face_emotion, audio_emotion, text_emotion, user_text):
 
         stress_level = self._compute_stress(
@@ -31,32 +29,33 @@ class ResponseGenerator:
             text_emotion
         )
 
-        prompt = f"""<|system|>
-    You are MAITRI.
-    You provide psychological and physiological support to astronauts.
-    Do NOT introduce yourself.
-    Do NOT simulate a conversation.
-    Respond in exactly 2-3 sentences only.
-    Be calm, professional, and mission-aware.
-    You are MAITRI, an AI assistant for astronaut support.
+        
+        prompt = f"""
+You are MAITRI, an AI assistant for astronauts.
 
-    STRICT RULES:
-    - Answer ONLY the astronaut's message
-    - DO NOT ask questions
-    - DO NOT simulate conversation
-    - Keep response to 2 sentences MAX
-    - Be calm, supportive, mission-focused
-    # <|user|>
-    Current emotional state:
-    - Facial emotion: {face_emotion}
-    - Voice emotion: {audio_emotion}
-    - Text emotion: {text_emotion}
-    # - Stress level: {stress_level}
+STRICT RULES:
+- Respond in ONLY 1–2 sentences
+- DO NOT ask questions
+- DO NOT simulate conversation
+- DO NOT include labels like 'User' or 'Astronaut'
+- Give direct emotional support only
 
-    Astronaut message:
-    {user_text}
-    <|assistant|>
-    """
+Tone Guidance:
+- HIGH stress → very calming
+- MODERATE → reassuring
+- LOW → supportive
+
+Emotional State:
+Face: {face_emotion}
+Audio: {audio_emotion}
+Text: {text_emotion}
+Stress: {stress_level}
+
+User:
+{user_text}
+
+Answer:
+"""
 
         inputs = self.tokenizer(prompt, return_tensors="pt")
         inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
@@ -64,9 +63,11 @@ class ResponseGenerator:
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=90,      # Reduced further
-                do_sample=False,
-                repetition_penalty=1.2, # Prevent repetition
+                max_new_tokens=60,
+                do_sample=True,
+                temperature=0.6,
+                top_p=0.8,
+                repetition_penalty=1.3,
                 eos_token_id=self.tokenizer.eos_token_id
             )
 
@@ -75,18 +76,35 @@ class ResponseGenerator:
             skip_special_tokens=True
         )
 
-        if "<|assistant|>" in response:
-            response = response.split("<|assistant|>")[-1]
+        if "Answer:" in response:
+            response = response.split("Answer:")[-1]
 
-        # Remove unwanted patterns
-        response = response.replace("Astronaut response", "")
+        bad_phrases = [
+            "Astronaut message",
+            "User:",
+            "Assistant:",
+            "<|",
+            "You are MAITRI"
+        ]
+
+        for phrase in bad_phrases:
+            response = response.replace(phrase, "")
+
         response = response.strip()
 
-        return response
+        if "?" in response:
+            response = response.split("?")[0] + "."
 
-    # =====================================
-    # STRESS COMPUTATION (Deterministic)
-    # =====================================
+        sentences = response.split(".")
+        response = ".".join(sentences[:2]).strip()
+
+        response = response.replace("\n", " ").strip()
+
+        if response == "" or len(response) < 5:
+            response = "Stay calm and focused. You are not alone."
+
+        return response
+    
     def _compute_stress(self, face, audio, text):
 
         negative = ["sad", "fear", "angry", "disgust"]

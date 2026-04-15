@@ -1,49 +1,54 @@
 import torch
 import numpy as np
-import sounddevice as sd
-import scipy.io.wavfile as wav
+import soundfile as sf
+
 from audio_emotion.audio_model import AudioEmotionModel
 from audio_emotion.feature_extraction import extract_features
+from audio_emotion.record_audio import record_audio
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-labels = ["neutral","calm","happy","sad","angry","fearful","disgust","surprised"]
-
 model = AudioEmotionModel().to(DEVICE)
+
 model.load_state_dict(
     torch.load("audio_emotion/models/ravdess_model.pth", map_location=DEVICE)
 )
+
 model.eval()
 
-def record_audio():
-    fs = 22050
-    duration = 3
-
-    recording = sd.rec(
-        int(duration * fs),
-        samplerate=fs,
-        channels=1,
-        dtype='float32'
-    )
-    sd.wait()
-
-    wav.write("temp.wav", fs, recording)
-
-    return recording   # ✅ IMPORTANT
+labels = [
+    "neutral","calm","happy","sad",
+    "angry","fear","disgust","surprise"
+]
 
 def predict_audio():
-    record_audio()
+    try:
+        audio = record_audio(duration=4)
 
-    mfcc = extract_features("temp.wav")
+        if audio is None:
+            return "No audio detected"
 
-    # ❗ Check silence (VERY IMPORTANT)
-    if mfcc is None or np.mean(mfcc) == 0:
-        return None   # 👈 signals no audio
+        if np.abs(audio).mean() < 0.001:
+            return "No audio detected"
 
-    mfcc = torch.tensor(mfcc).unsqueeze(0).unsqueeze(0).float().to(DEVICE)
+        sf.write("temp.wav", audio, 22050)
 
-    with torch.no_grad():
-        output = model(mfcc)
-        _, pred = torch.max(output,1)
+        features = extract_features("temp.wav")
 
-    return labels[pred.item()]
+        if features is None:
+            return "No audio detected"
+
+        features = torch.tensor(features).unsqueeze(0).unsqueeze(0).float().to(DEVICE)
+
+        with torch.no_grad():
+            output = model(features)
+            probs = torch.softmax(output, dim=1)
+            pred = torch.argmax(probs, dim=1)
+
+        print("Confidence:", probs.max().item())
+
+        return labels[pred.item()]
+
+    except Exception as e:
+        print("Audio Error:", e)
+        return "No audio detected"
