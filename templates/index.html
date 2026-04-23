@@ -58,7 +58,11 @@
 
 <body>
 
-<h1>MAITRI: AI Assistant</h1>
+<div style="display:flex; align-items:center; justify-content:center; gap:16px; margin: 24px auto 30px;">
+    <img src="../static/astro.jpg"
+         style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #4a90d9; box-shadow:0 0 14px rgba(74,144,217,0.5);">
+    <h1 style="margin:0;">MAITRI: AI Assistant for Astronauts</h1>
+</div>
 
 <div class="container">
 
@@ -94,7 +98,7 @@
 </div>
 
 <script>
-let isGenerating = false;
+
 
 
 setInterval(function(){
@@ -113,17 +117,16 @@ setInterval(function(){
 
 function detectText(){
 
-    if (isGenerating) return;
-
     const text = document.getElementById("textInput").value;
 
     if (text.trim() === "") return;
 
-    isGenerating = true;
+    // 🔒 Disable button while processing
+    const btn = document.querySelector("button");
+    btn.disabled = true;
 
     document.getElementById("aiResponse").innerHTML = "Generating support response...";
 
-    // STEP 1: TEXT EMOTION
     fetch('/text_emotion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -135,11 +138,10 @@ function detectText(){
         document.getElementById("textEmotion").innerHTML =
             data.text_emotion || "None";
 
-        // STEP 2: GENERATE RESPONSE (FIXED)
         return fetch('/generate_response', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },   
-            body: JSON.stringify({ text: text })               
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
         });
 
     })
@@ -149,16 +151,20 @@ function detectText(){
         document.getElementById("aiResponse").innerHTML =
             result.response;
 
-        isGenerating = false;
+        // ✅ Re-enable button after completion
+        btn.disabled = false;
 
     })
     .catch(error => {
         console.error(error);
         document.getElementById("aiResponse").innerHTML =
             "AI system error.";
-        isGenerating = false;
+
+        // ✅ Re-enable button even on error
+        btn.disabled = false;
     });
 }
+
 </script>
 
 </body>

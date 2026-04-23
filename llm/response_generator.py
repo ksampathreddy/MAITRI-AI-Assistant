@@ -96,7 +96,23 @@ Answer:
 
         for phrase in bad_phrases:
             response = response.replace(phrase, "")
+        import re
 
+        response = re.sub(r"Striker:.*", "", response)
+        response = re.sub(r"\(.*?\)", "", response)
+
+
+        response = response.strip()
+        response = response[:150]
+
+        if "?" in response:
+            response = response.split("?")[0] + "."
+
+        sentences = response.split(".")
+        response = ".".join(sentences[:2]).strip()
+
+        if response == "" or len(response) < 5:
+            response = "Stay calm and focused. You are not alone."
         response = response.strip()
 
         if "?" in response:

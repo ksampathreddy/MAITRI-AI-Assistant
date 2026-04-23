@@ -1,22 +1,37 @@
 import pyttsx3
 import threading
+import queue
+import time
 
-engine = pyttsx3.init()
+speech_queue = queue.Queue()
 
-engine.setProperty('rate', 160)
-engine.setProperty('volume', 1.0)
+def tts_worker():
+    engine = pyttsx3.init()
 
-# 🔒 Global lock
-tts_lock = threading.Lock()
+    engine.setProperty('rate', 160)
+    engine.setProperty('volume', 1.0)
 
-def speak(text):
-    try:
-        with tts_lock:   # ✅ prevents multiple threads
+    while True:
+        text = speech_queue.get()
+
+        try:
             print("Speaking:", text)
 
-            engine.stop()  # stop previous speech (important)
             engine.say(text)
             engine.runAndWait()
 
-    except Exception as e:
-        print("TTS Error:", e)
+            time.sleep(1)
+
+        except Exception as e:
+            print("TTS Error:", e)
+
+        finally:
+            speech_queue.task_done()
+
+
+threading.Thread(target=tts_worker, daemon=True).start()
+
+
+def speak(text):
+    print("Queued:", text)
+    speech_queue.put(text)

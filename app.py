@@ -220,9 +220,9 @@ def generate_response():
             response = "Stay calm and focused. You are not alone."
 
         with lock:
-            if response != latest_ai_response:
-                latest_ai_response = response
-                threading.Thread(target=speak, args=(response,)).start()
+            latest_ai_response = response
+
+        speak(response)
 
     except Exception as e:
         print("LLM ERROR:", e)
